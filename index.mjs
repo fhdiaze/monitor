@@ -8,6 +8,7 @@ import url from 'url';
 import { StringDecoder } from 'string_decoder';
 import * as config from './config.mjs';
 import fs from 'fs';
+import { handlers } from './lib/handlers.mjs';
 
 const handle = (req, res) => {
   // Get the URL and parse it
@@ -74,19 +75,6 @@ const httpsServer = https.createServer(httpsOptions, handle);
 httpsServer.listen(config.httpsPort, () => {
   console.log(`The server is listening on port ${config.httpsPort}`);
 });
-
-const ping = (data, callback) => {
-  callback(200);
-};
-
-const notFound = (data, callback) => {
-  callback(404);
-};
-
-const handlers = {
-  ping,
-  notFound,
-};
 
 const route = (data, callback) => {
   const handle = handlers[data.trimmedPath] ?? handlers.notFound;
