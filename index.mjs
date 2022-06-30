@@ -6,9 +6,10 @@ import http from 'http';
 import https from 'https';
 import url from 'url';
 import { StringDecoder } from 'string_decoder';
-import * as config from './config.mjs';
+import * as config from './lib/config.mjs';
 import fs from 'fs';
 import { handlers } from './lib/handlers.mjs';
+import * as helpers from './lib/helpers.mjs';
 
 const handle = (req, res) => {
   // Get the URL and parse it
@@ -39,7 +40,7 @@ const handle = (req, res) => {
       query,
       method,
       headers,
-      payload: buffer,
+      payload: helpers.parseJsonToObject(buffer),
     };
 
     route(data, (statusCode, payload) => {
@@ -60,8 +61,8 @@ const handle = (req, res) => {
 const httpServer = http.createServer(handle);
 
 // Start the HTTP server
-httpServer.listen(config.httpPort, () => {
-  console.log(`The server is listening on port ${config.httpPort}`);
+httpServer.listen(config.environment.httpPort, () => {
+  console.log(`The server is listening on port ${config.environment.httpPort}`);
 });
 
 // Instantiate the HTTPS server
@@ -72,8 +73,8 @@ const httpsOptions = {
 const httpsServer = https.createServer(httpsOptions, handle);
 
 // Start the HTTPS server
-httpsServer.listen(config.httpsPort, () => {
-  console.log(`The server is listening on port ${config.httpsPort}`);
+httpsServer.listen(config.environment.httpsPort, () => {
+  console.log(`The server is listening on port ${config.environment.httpsPort}`);
 });
 
 const route = (data, callback) => {
